@@ -6,6 +6,8 @@ This is to allow occasional developers to have dedicated runners for their proje
 
 To build the required ZIP files, you can simply run `make build` in the root of this repo.
 
+I might get around to modularising the code & adding tests at some point if I find time.
+
 The terraform directory is intended as an example only, it is not something to consider to be production-ready.
 
 Nonetheless, it contains a working deployment of this solution with the required lambdas, API gateway & ASG with a launch configuration that builds a Gitlab runner on EC2, in Docker, using flatcar linux. YMMV.
