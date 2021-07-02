@@ -1,6 +1,6 @@
-module github.com/anas-domesticus/gitlab_runners_on_demand/src/gitlab_lambdas
+module github.com/anas-domesticus/code_snippets/gitlab_runners_on_demand/src/gitlab_lambdas
 
-go 1.15
+go 1.16
 
 require (
 	github.com/aws/aws-lambda-go v1.22.0
