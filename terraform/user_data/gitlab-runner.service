@@ -1,0 +1,39 @@
+[Unit]
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+RestartSec=5
+
+ExecStartPre=-/usr/bin/docker pull gitlab/gitlab-runner:v13.12.0
+ExecStartPre=-/usr/bin/docker run \
+    -v /etc/gitlab-runner:/etc/gitlab-runner gitlab/gitlab-runner:v13.12.0 register \
+    --non-interactive \
+    --executor "docker" \
+    --docker-image alpine:latest \
+    --url "https://gitlab.com/" \
+    --registration-token "${token}" \
+    --tag-list "docker_sock,aws" \
+    --name $(curl http://169.254.169.254/latest/meta-data/instance-id) \
+    --run-untagged="true" \
+    --locked="false" \
+    --access-level="not_protected"
+
+ExecStartPre=-/usr/bin/docker run --rm \
+             -v /etc/gitlab-runner:/etc/gitlab-runner alpine /etc/gitlab-runner/config.sh
+
+ExecStart=/usr/bin/docker run --name gitlab-runner \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v /etc/gitlab-runner:/etc/gitlab-runner \
+    gitlab/gitlab-runner:v13.12.0
+
+ExecStop=/usr/bin/docker stop gitlab-runner
+ExecStop=-/usr/bin/docker run --rm \
+             -v /etc/gitlab-runner:/etc/gitlab-runner gitlab/gitlab-runner unregister \
+             --name $(curl http://169.254.169.254/latest/meta-data/instance-id)
+ExecStopPost=-/usr/bin/docker rm -f gitlab-runner
+
+[Install]
+WantedBy=multi-user.target
